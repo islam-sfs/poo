@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
+// search product 
 public class InventoryUI {
 
     private JFrame frame;
