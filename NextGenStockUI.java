@@ -81,6 +81,12 @@ public class NextGenStockUI extends JFrame {
 
         return panel;
     }
+    public void addProductFromInventory(String name, double price) {
+        productPrices.put(name, price);
+        refreshProductButtons(); // حتى يظهر في الأزرار الجانبية
+        addProductToTable(name); // حتى ينضاف مباشرة في الجدول
+    }
+    
 
     private JPanel createLoginPanel() {
         JPanel loginPanel = new JPanel(new GridBagLayout());
@@ -139,19 +145,20 @@ public class NextGenStockUI extends JFrame {
         title.setFont(new Font("Segoe UI", Font.BOLD, 32));
         ticketLabel = new JLabel("Ticket: TICKET-" + df.format(ticketCounter));
         ticketLabel.setForeground(Color.YELLOW);
-        ticketLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        ticketLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         topPanel.add(title, BorderLayout.CENTER);
         topPanel.add(ticketLabel, BorderLayout.EAST);
         appPanel.add(topPanel, BorderLayout.NORTH);
 
-        leftPanel = new JPanel(new GridLayout(16, 1, 8, 8));
+        leftPanel = new JPanel(new GridLayout(16, 1, 12, 12));
         leftPanel.setBackground(new Color(245, 245, 245));
         leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         refreshProductButtons();
 
         JButton addProductBtn = createStyledButton("+ Add Product", new Color(50, 205, 50), Color.BLACK);
-        addProductBtn.addActionListener(e -> showAddProductDialog());
-        leftPanel.add(addProductBtn);
+        addProductBtn.addActionListener(e -> new InventoryUI(this));
+
+
 
         appPanel.add(leftPanel, BorderLayout.WEST);
 
@@ -174,7 +181,7 @@ public class NextGenStockUI extends JFrame {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(new Color(250, 250, 250));
         rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-
+        rightPanel.add(addProductBtn);
         dateTimeLabel = new JLabel();
         updateTime();
         dateTimeLabel.setFont(new Font("Consolas", Font.PLAIN, 14));
@@ -182,11 +189,11 @@ public class NextGenStockUI extends JFrame {
         rightPanel.add(dateTimeLabel);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 15)));
 
-        String[] actions = { "Modify Price", "Modify Quantity", "Ticket", "Print Invoice", "Search Product", "Return"};
+        String[] actions = { "Modify Price", "Modify Quantity", "Ticket","Delete", "Print Invoice", "Search Product", "Return"};
         for (String action : actions) {
             JButton btn = createStyledButton(action, new Color(100, 149, 237), Color.WHITE);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btn.setMaximumSize(new Dimension(180, 40));
+            btn.setMaximumSize(new Dimension(180, 60));
             if (action.equals("Print Invoice")) {
                 btn.addActionListener(this::saveInvoiceToFile);
             } else if (action.equals("Delete")) {
@@ -200,8 +207,11 @@ public class NextGenStockUI extends JFrame {
             } else if (action.equals("Modify Quantity")) {
                 btn.addActionListener(this::modifyQuantity);
             }
+            
             rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            
             rightPanel.add(btn);
+            
         }
         appPanel.add(rightPanel, BorderLayout.EAST);
 
@@ -212,14 +222,14 @@ public class NextGenStockUI extends JFrame {
         taxBtn.addActionListener(this::showTax);
         JButton cancelBtn = createStyledButton("Cancel", Color.GRAY, Color.WHITE);
         cancelBtn.addActionListener(e -> clearAll());
-        JButton payBtn = createStyledButton("Pay", new Color(34, 139, 34), Color.BLUE);
+        JButton payBtn = createStyledButton("Pay", new Color(34, 139, 34), Color.white);
         payBtn.addActionListener(this::processPayment);
         payBtn.addActionListener(e -> clearAll());
 
         bottomPanel.add(taxBtn);
         bottomPanel.add(cancelBtn);
         bottomPanel.add(payBtn);
-
+        bottomPanel.add(addProductBtn);
         appPanel.add(bottomPanel, BorderLayout.SOUTH);
         return appPanel;
     }
@@ -273,6 +283,17 @@ public class NextGenStockUI extends JFrame {
         productPrices.put("bean", 250.0);
         productPrices.put("egg", 30.0);
         productPrices.put("flour", 80.0);
+        
+        productPrices.put("choclate", 150.0);
+        
+        productPrices.put("bread", 150.0);
+        
+        productPrices.put("suger", 150.0);
+        
+        productPrices.put("salt", 150.0);
+        
+        productPrices.put("meat", 150.0);
+
     }
 
 
@@ -280,7 +301,7 @@ public class NextGenStockUI extends JFrame {
         JButton button = new JButton(text);
         button.setBackground(bg);
         button.setForeground(fg);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 20));
         button.setFocusPainted(false);
         return button;
     }

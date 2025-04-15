@@ -1,16 +1,17 @@
-package poo;
 
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-// search product 
+// search product class 
 public class InventoryUI {
+    private NextGenStockUI mainUI;
 
     private JFrame frame;
     private JTable table;
@@ -18,9 +19,11 @@ public class InventoryUI {
     private JTextField searchField;
     private JComboBox<String> statusFilter;
 
-    public InventoryUI() {
+    public InventoryUI(NextGenStockUI mainUI) {
+        this.mainUI = mainUI;
         initializeUI();
     }
+    
 
     private void initializeUI() {
         Color background = Color.WHITE;
@@ -37,7 +40,7 @@ public class InventoryUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.getContentPane().setBackground(background);
-        ImageIcon image = new ImageIcon("logo.jpg");
+        ImageIcon image = new ImageIcon("next.png");
         frame.setIconImage(image.getImage());
 
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
@@ -172,6 +175,16 @@ public class InventoryUI {
         addFrame.add(save);
 
         save.addActionListener(ev -> {
+            try {
+                String name = product.getText().trim();
+                double priceValue = Double.parseDouble(price.getText().trim());
+                mainUI.addProductFromInventory(name, priceValue); // ← إضافة المنتج
+                addFrame.dispose();
+                frame.dispose(); // يغلق نافذة InventoryUI بعد الإضافة
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Invalid price.");
+            }
+
             model.addRow(new Object[]{
                     "#NEW", product.getText(), price.getText(), subFamily.getText(),
                     items.getText(), statusBox.getSelectedItem()
@@ -182,7 +195,10 @@ public class InventoryUI {
         addFrame.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(InventoryUI::new);
-    }
+   
+        public static void main(String[] args) {
+            SwingUtilities.invokeLater(NextGenStockUI::new);
+        }
+        
+    
 }
